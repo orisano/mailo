@@ -45,6 +45,10 @@ func ParseAddressList(list string) ([]*mail.Address, error) {
 
 func ReadBody(msg *mail.Message) (b []byte, err error) {
 	contentType := msg.Header.Get("Content-Type")
+	if contentType == "" {
+		contentType = "text/plain; charset=us-ascii"
+	}
+
 	mediaType, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse content-type")
@@ -55,21 +59,22 @@ func ReadBody(msg *mail.Message) (b []byte, err error) {
 
 	r := msg.Body
 	encoding := msg.Header.Get("Content-Transfer-Encoding")
-	if encoding != "" {
-		switch {
-		case strings.EqualFold(encoding, "quoted-printable"):
-			r = quotedprintable.NewReader(r)
-		case strings.EqualFold(encoding, "base64"):
-			r = base64.NewDecoder(base64.StdEncoding, r)
-			defer func() {
-				if err == io.ErrUnexpectedEOF {
-					err = nil
-				}
-			}()
-		case strings.EqualFold(encoding, "7bit"), strings.EqualFold(encoding, "8bit"):
-		default:
-			return nil, fmt.Errorf("unsupported encoding: %q", encoding)
-		}
+	if encoding == "" {
+		encoding = "7BIT"
+	}
+	switch {
+	case strings.EqualFold(encoding, "quoted-printable"):
+		r = quotedprintable.NewReader(r)
+	case strings.EqualFold(encoding, "base64"):
+		r = base64.NewDecoder(base64.StdEncoding, r)
+		defer func() {
+			if err == io.ErrUnexpectedEOF {
+				err = nil
+			}
+		}()
+	case strings.EqualFold(encoding, "7bit"), strings.EqualFold(encoding, "8bit"):
+	default:
+		return nil, fmt.Errorf("unsupported encoding: %q", encoding)
 	}
 
 	if cs, ok := params["charset"]; ok {
