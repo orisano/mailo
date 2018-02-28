@@ -16,7 +16,7 @@ func mustMessage(msg *mail.Message, err error) *mail.Message {
 }
 
 func message(s string) *mail.Message {
-	return mustMessage(mail.ReadMessage(strings.NewReader(s)))
+	return mustMessage(mail.ReadMessage(strings.NewReader(strings.TrimPrefix(s, "\n"))))
 }
 
 func TestReadBody(t *testing.T) {
@@ -25,7 +25,8 @@ func TestReadBody(t *testing.T) {
 		expected string
 	}{
 		{
-			msg: message(`To: Another Gopher <to@example.com>
+			msg: message(`
+To: Another Gopher <to@example.com>
 Subject: Gophers at Gophercon
 Date: Mon, 23 Jun 2015 11:40:36 -0400
 From: Gopher <from@example.com>
@@ -37,7 +38,8 @@ Message body
 			expected: "Message body\n",
 		},
 		{
-			msg: message(`To: Another Gopher <to@example.com>
+			msg: message(`
+To: Another Gopher <to@example.com>
 Subject: =?ISO-2022-JP?B?GyRCIVolRiU5JUg0RDYtIVslNSUkJUg5OT83JCw0ME47JDckXiQ3JD8bKEI=?=
 Date: Tue, 15 Sep 2015 16:17:23 +0000
 From: Gopher <from@example.com>
@@ -49,7 +51,8 @@ Content-Type: text/plain; charset=ISO-2022-JP
 			expected: "サイトを更新した状態に保つことはセキュリティにとって重要です。それはまた、あなたとあなたの読者にとってインターネットをより安全な場所にすることでもあります。\n",
 		},
 		{
-			msg: message(`To: Another Gopher <to@example.com>
+			msg: message(`
+To: Another Gopher <to@example.com>
 Subject: =?ISO-2022-JP?B?GyRCIVolRiU5JUg0RDYtIVslNSUkJUg5OT83JCw0ME47JDckXiQ3JD8bKEI=?=
 Date: Tue, 15 Sep 2015 16:17:23 +0000
 From: Gopher <from@example.com>
@@ -62,7 +65,8 @@ Content-Transfer-Encoding: quoted-printable
 			expected: "サイトを更新した状態に保つことはセキュリティにとって重要です。それはまた、あなたとあなたの読者にとってインターネットをより安全な場所にすることでもあります。\n",
 		},
 		{
-			msg: message(`MIME-Version: 1.0
+			msg: message(`
+MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 To: Another Gopher <to@example.com>
@@ -79,7 +83,8 @@ From: Gopher <from@example.com>
 			expected: "サイトを更新した状態に保つことはセキュリティにとって重要です。それはまた、あなたとあなたの読者にとってインターネットをより安全な場所にすることでもあります。\n",
 		},
 		{
-			msg: message(`To: Another Gopher <to@example.com>
+			msg: message(`
+To: Another Gopher <to@example.com>
 Subject: Gophers at Gophercon
 From: Gopher <from@example.com>
 Date: Fri, 18 Sep 2015 17:51:01 +0900
