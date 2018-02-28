@@ -53,7 +53,7 @@ func ReadBody(msg *mail.Message) (b []byte, err error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse content-type")
 	}
-	if mediaType != "text/plain" {
+	if !strings.HasPrefix(mediaType, "text/") {
 		return nil, fmt.Errorf("unsupported media type: %q", mediaType)
 	}
 
