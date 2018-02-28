@@ -66,7 +66,7 @@ func ReadBody(msg *mail.Message) (b []byte, err error) {
 			}()
 		case strings.EqualFold(encoding, "7bit"), strings.EqualFold(encoding, "8bit"):
 		default:
-			return nil, fmt.Errorf("unsupported encoding")
+			return nil, fmt.Errorf("unsupported encoding: %q", encoding)
 		}
 	}
 
