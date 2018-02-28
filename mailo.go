@@ -15,10 +15,8 @@ import (
 	"golang.org/x/text/transform"
 )
 
-var addrParser = &mail.AddressParser{
-	WordDecoder: &mime.WordDecoder{
-		CharsetReader: charsetReader,
-	},
+var dec = &mime.WordDecoder{
+	CharsetReader: charsetReader,
 }
 
 func charsetReader(charset string, input io.Reader) (io.Reader, error) {
@@ -33,12 +31,16 @@ func charsetReader(charset string, input io.Reader) (io.Reader, error) {
 	return transform.NewReader(input, enc.NewDecoder()), nil
 }
 
+func DecodeHeader(header string) (string, error) {
+	return dec.DecodeHeader(header)
+}
+
 func ParseAddress(address string) (*mail.Address, error) {
-	return addrParser.Parse(address)
+	return (&mail.AddressParser{WordDecoder: dec}).Parse(address)
 }
 
 func ParseAddressList(list string) ([]*mail.Address, error) {
-	return addrParser.ParseList(list)
+	return (&mail.AddressParser{WordDecoder: dec}).ParseList(list)
 }
 
 func ReadBody(msg *mail.Message) (b []byte, err error) {
