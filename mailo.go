@@ -20,6 +20,7 @@ var dec = &mime.WordDecoder{
 }
 
 func charsetReader(charset string, input io.Reader) (io.Reader, error) {
+	// for iPhone
 	if strings.EqualFold(charset, "CP932") {
 		charset = "Shift_JIS"
 	}
