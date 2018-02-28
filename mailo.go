@@ -1,4 +1,4 @@
-package jpmail
+package mailo
 
 import (
 	"encoding/base64"

@@ -1,11 +1,11 @@
-package jpmail_test
+package mailo_test
 
 import (
 	"net/mail"
 	"strings"
 	"testing"
 
-	"github.com/orisano/jpmail"
+	"github.com/orisano/mailo"
 )
 
 func mustMessage(msg *mail.Message, err error) *mail.Message {
@@ -109,7 +109,7 @@ MIME-Version: 1.0
 	}
 
 	for _, test := range tests {
-		b, err := jpmail.ReadBody(test.msg)
+		b, err := mailo.ReadBody(test.msg)
 		if err != nil {
 			t.Error(err)
 			continue
