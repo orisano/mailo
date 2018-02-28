@@ -10,6 +10,7 @@ import (
 	"net/mail"
 	"strings"
 
+	"github.com/pkg/errors"
 	"golang.org/x/text/encoding/ianaindex"
 	"golang.org/x/text/transform"
 )
@@ -40,11 +41,11 @@ func ParseAddressList(list string) ([]*mail.Address, error) {
 	return addrParser.ParseList(list)
 }
 
-func ReadBody(msg *mail.Message) ([]byte, error) {
+func ReadBody(msg *mail.Message) (b []byte, err error) {
 	contentType := msg.Header.Get("Content-Type")
 	mediaType, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to parse content-type")
 	}
 	if mediaType != "text/plain" {
 		return nil, fmt.Errorf("unsupported media type: %q", mediaType)
@@ -58,6 +59,11 @@ func ReadBody(msg *mail.Message) ([]byte, error) {
 			r = quotedprintable.NewReader(r)
 		case strings.EqualFold(encoding, "base64"):
 			r = base64.NewDecoder(base64.StdEncoding, r)
+			defer func() {
+				if err == io.ErrUnexpectedEOF {
+					err = nil
+				}
+			}()
 		case strings.EqualFold(encoding, "7bit"), strings.EqualFold(encoding, "8bit"):
 		default:
 			return nil, fmt.Errorf("unsupported encoding")
@@ -65,12 +71,11 @@ func ReadBody(msg *mail.Message) ([]byte, error) {
 	}
 
 	if cs, ok := params["charset"]; ok {
-		rr, err := charsetReader(cs, r)
+		cr, err := charsetReader(cs, r)
 		if err != nil {
 			return nil, err
 		}
-		r = rr
+		r = cr
 	}
-
 	return ioutil.ReadAll(r)
 }
