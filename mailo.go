@@ -26,7 +26,7 @@ func charsetReader(charset string, input io.Reader) (io.Reader, error) {
 	}
 	enc, err := ianaindex.IANA.Encoding(charset)
 	if err != nil {
-		return nil, fmt.Errorf("charset not supported: %q: %v", charset, err)
+		return nil, fmt.Errorf("unsupported charset: %q: %v", charset, err)
 	}
 
 	return transform.NewReader(input, enc.NewDecoder()), nil
