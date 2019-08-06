@@ -1,5 +1,5 @@
 # mailo
-mailo is email decoder for golang.
+mailo is email decoder for go.
 
 ## Installation
 ```bash
