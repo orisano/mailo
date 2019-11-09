@@ -1,4 +1,6 @@
 # mailo
+![](https://github.com/orisano/mailo/workflows/Test/badge.svg)
+
 mailo is email decoder for go.
 
 ## Installation
