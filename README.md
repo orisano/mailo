@@ -9,7 +9,7 @@ go get github.com/orisano/mailo
 ```
 
 ## Author
-Nao YONASHIRO (@orisano)
+Nao Yonashiro (@orisano)
 
 ## LICENSE
 MIT
