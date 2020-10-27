@@ -10,7 +10,6 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/pkg/errors"
 	"golang.org/x/text/encoding/ianaindex"
 	"golang.org/x/text/transform"
 )
@@ -52,7 +51,7 @@ func ReadBody(msg *mail.Message) (b []byte, err error) {
 
 	mediaType, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content-type")
+		return nil, fmt.Errorf("parse content-type: %w", err)
 	}
 	if !strings.HasPrefix(mediaType, "text/") {
 		return nil, fmt.Errorf("unsupported media type: %q", mediaType)
